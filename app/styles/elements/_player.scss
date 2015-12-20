@@ -1,0 +1,57 @@
+.radio-player {
+  &--main {
+    background-color: $background-color;
+    border-radius: 3px;
+    bottom: 10px;
+    min-height: 78px;
+    padding: 8px;
+    width: 290px;
+
+    .jp-type-single {
+      display: none;
+    }
+
+    .jp-controls {
+      float: left;
+      width: 50px;
+    }
+
+    .jp-details {
+      color: #fff;
+      font-size: 1.4rem;
+    }
+
+    .jp-volume-controls {
+      margin-top: $grid-gutter-width / 6;
+
+      > a {
+        display: inline-block;
+        height: 20px;
+        position: relative;
+        vertical-align: middle;
+        width: 20px;
+
+        &:before {
+          left: 50%;
+          position: absolute;
+          top: 50%;
+          transform: translate(-50%, -50%);
+        }
+      }
+    }
+
+    .jp-volume-bar {
+      background-color: #ccc;
+      border-radius: 3px;
+      display: inline-block;
+      overflow: hidden;
+      vertical-align: middle;
+      width: 83%;
+    }
+
+    .jp-volume-bar-value {
+      background-color: $brand-primary;
+      height: 8px;
+    }
+  }
+}
