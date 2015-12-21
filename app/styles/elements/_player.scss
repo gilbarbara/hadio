@@ -1,24 +1,41 @@
 .radio-player {
   &--main {
     background-color: $background-color;
-    border-radius: 3px;
-    bottom: 10px;
-    min-height: 78px;
-    padding: 8px;
-    width: 290px;
-
-    .jp-type-single {
-      display: none;
-    }
+    border-radius: 0.3rem;
+    bottom: 1rem;
+    max-width: 64rem;
+    min-height: 8rem;
+    min-width: 29rem;
+    padding: 0.8rem;
 
     .jp-controls {
       float: left;
-      width: 50px;
     }
 
     .jp-details {
       color: #fff;
+      margin-left: $grid-gutter-width * 1.5;
+    }
+
+    .jp-title {
       font-size: 1.4rem;
+      font-weight: 600;
+      height: 3.9rem;
+      line-height: 1.8rem;
+      overflow: hidden;
+
+      @include md {
+        font-size: 1.8rem;
+      }
+    }
+
+    .jp-next {
+      border-top: 0.1rem solid $brand-primary;
+      color: #fff;
+      font-size: 1.4rem;
+      font-style: italic;
+      margin-top: 1rem;
+      padding-top: 0.5rem;
     }
 
     .jp-volume-controls {
@@ -26,32 +43,56 @@
 
       > a {
         display: inline-block;
-        height: 20px;
-        position: relative;
+        height: 2rem;
+        text-align: left;
         vertical-align: middle;
-        width: 20px;
+        width: 2rem;
 
-        &:before {
-          left: 50%;
-          position: absolute;
-          top: 50%;
-          transform: translate(-50%, -50%);
+        &:last-of-type {
+          text-align: right;
         }
+
+        &:hover,
+        &:focus {
+          color: darken($brand-primary, 10);
+          outline: none;
+          text-decoration: none;
+        }
+      }
+
+      .jp-mute {
+        float: left;
+      }
+
+      .jp-volume-max {
+        float: right;
       }
     }
 
     .jp-volume-bar {
       background-color: #ccc;
-      border-radius: 3px;
-      display: inline-block;
+      border-radius: 0.3rem;
+      margin-left: 2.4rem;
+      margin-right: 2.4rem;
       overflow: hidden;
+      position: relative;
+      top: 0.5rem;
       vertical-align: middle;
-      width: 83%;
+
+      &:hover,
+      &:focus {
+        background-color: #bbb;
+      }
     }
 
     .jp-volume-bar-value {
       background-color: $brand-primary;
-      height: 8px;
+      height: 1rem;
+
+      &:hover,
+      &:focus {
+        background-color: darken($brand-primary, 10);
+      }
     }
   }
 }

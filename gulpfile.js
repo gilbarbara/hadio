@@ -208,7 +208,7 @@ gulp.task('clean', function (cb) {
 gulp.task('serve', ['assets'], function () {
 	browserSync({
 		notify: true,
-		logPrefix: 'o2',
+		logPrefix: 'hadio',
 		files: ['app/*.html', '.tmp/styles/**/*.css', '.tmp/*.js', 'app/media/**/*'],
 		server: {
 			baseDir: ['.tmp', 'app'],
@@ -233,12 +233,12 @@ gulp.task('build', function (cb) {
 	runSequence('scripts:lint', 'assets', ['media', 'bundle'], 'sizer', cb);
 });
 
-gulp.task('deploy', ['build'], function (cb) {
-	exec('rsync -rvpa --progress --delete --exclude=.DS_Store -e "ssh -q -t" dist/* o2filmes@o2filmes.com.br:/home/o2filmes/public_html/trabalhos', function (err, stdout) {
+/*gulp.task('deploy', ['build'], function (cb) {
+	exec('rsync -rvpa --progress --delete --exclude=.DS_Store -e "ssh -q -t" dist/!* o2filmes@o2filmes.com.br:/home/o2filmes/public_html/trabalhos', function (err, stdout) {
 		console.log(stdout);
 
 		cb(err);
 	});
-});
+});*/
 
 gulp.task('default', ['serve']);
