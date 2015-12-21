@@ -1,6 +1,6 @@
 html {
-  -webkit-font-smoothing: antialiased;
   font-size: 62.5%;
+  -webkit-font-smoothing: antialiased;
   height: 100%;
 }
 
@@ -32,10 +32,10 @@ iframe {
 
 .main-header {
   @include app-container();
-  background-color: $brand-primary;
-  color: lighten($brand-primary, 25);
+  background-image: linear-gradient(to bottom, $brand-primary, darken($brand-primary, 15));
+  color: rgba(#fff, 0.7);
   height: 12rem;
-  padding-bottom:3rem;
+  padding-bottom: 3rem;
   padding-top: 3rem;
 
   h1 {

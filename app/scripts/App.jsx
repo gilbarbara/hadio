@@ -48,7 +48,7 @@ class Hadio extends React.Component {
 
 		if (now) {
 			this.fetchData().then(data => {
-				if (STATE.current.name !== data.tracks.current.name) {
+				if (STATE.tracks.current.name !== data.tracks.current.name) {
 					this.log('updateData:setState', data.tracks);
 
 					this.interval = setInterval(() => {
@@ -66,11 +66,15 @@ class Hadio extends React.Component {
 							clearInterval(this.interval);
 						}
 					}, 1000);
-
 				}
 				else if (ends - date < 3000 && this.retryCount < 8) {
 					this.log('updateData:retry', this.retryCount);
 					setTimeout(() => {
+						if (new Date(STATE.tracks.next.starts) < date) {
+							this.setState({
+								current: STATE.tracks.next
+							});
+						}
 						this.updateData(this.retryCount < 7);
 						this.retryCount++;
 					}, 1000 * this.retryCount + 1);
@@ -91,10 +95,7 @@ class Hadio extends React.Component {
 	}
 
 	fetchData () {
-		return fetchJsonp(config.apiUrl + 'station-metadata&callback=callback', {
-			credentials: 'include',
-			mode: 'no-cors'
-		})
+		return fetchJsonp(config.apiUrl + '?callback=callback')
 			.then(response => {
 				return response.json();
 			})
@@ -203,7 +204,7 @@ class Hadio extends React.Component {
 
 		if (STATE.ready) {
 			info.name = STATE.current.name;
-			info.next = STATE.tracks.next.name;
+			info.next = STATE.current.name !== STATE.tracks.next.name ? STATE.tracks.next.name : '--';
 			info.starts = new Date(STATE.current.starts);
 			info.ends = new Date(STATE.current.ends);
 			info.duration = this.secondsToTime((info.ends - info.starts) / 1000);
