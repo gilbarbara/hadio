@@ -9,11 +9,13 @@ var gulp        = require('gulp'),
 	path        = require('path'),
 	runSequence = require('run-sequence'),
 	source      = require('vinyl-source-stream'),
+	vinylPaths  = require('vinyl-paths'),
 	watchify    = require('watchify');
 
 var isProduction = function () {
 		return process.env.NODE_ENV === 'production';
-	};
+	},
+	commitMessage;
 
 function watchifyTask (options) {
 	var bundler, rebundle, iteration = 0;
@@ -233,12 +235,40 @@ gulp.task('build', function (cb) {
 	runSequence('scripts:lint', 'assets', ['media', 'bundle'], 'sizer', cb);
 });
 
-/*gulp.task('deploy', ['build'], function (cb) {
-	exec('rsync -rvpa --progress --delete --exclude=.DS_Store -e "ssh -q -t" dist/!* o2filmes@o2filmes.com.br:/home/o2filmes/public_html/trabalhos', function (err, stdout) {
-		console.log(stdout);
+gulp.task('get-commit', function (cb) {
+	exec('git log -1 --pretty=%s && git log -1 --pretty=%b', function (err, stdout) {
+		var parts = stdout.replace('\n\n', '').split('\n');
+
+		commitMessage = parts[0];
+		if (parts[1]) {
+			commitMessage += ' — ' + parts[1];
+		}
 
 		cb(err);
 	});
-});*/
+});
+
+gulp.task('gh-pages', function () {
+	var clean,
+		push;
+
+	clean = gulp.src('.publish/.DS_Store')
+		.pipe(vinylPaths(del));
+
+	push = gulp.src([
+			'dist/**/*'
+		])
+		.pipe($.ghPages({
+			branch: 'gh-pages',
+			message: commitMessage,
+			force: true
+		}));
+
+	return merge(clean, push);
+});
+
+gulp.task('deploy', function (cb) {
+	runSequence(['build', 'get-commit'], 'gh-pages', cb);
+});
 
 gulp.task('default', ['serve']);
