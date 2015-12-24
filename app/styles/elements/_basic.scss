@@ -29,35 +29,3 @@ a {
 iframe {
   border: 0;
 }
-
-.main-header {
-  @include app-container();
-  background-image: linear-gradient(to bottom, $brand-primary, darken($brand-primary, 15));
-  color: rgba(#fff, 0.7);
-  height: 12rem;
-  padding-bottom: 3rem;
-  padding-top: 3rem;
-
-  h1 {
-    font-family: Righteous, sans-serif;
-    font-size: 6rem;
-    line-height: 1;
-    margin: 0;
-  }
-}
-
-.main-content {
-  @include app-container();
-  height: calc(100vh - (12rem + 4rem));
-  padding-top: 4.5rem;
-}
-
-.main-footer {
-  @include app-container();
-  background-color: lighten($brand-primary, 33);
-  color: $brand-primary;
-  font-family: Righteous, sans-serif;
-  height: 4rem;
-  padding-top: 1rem;
-}
-

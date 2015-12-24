@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import fetchJsonp from 'fetch-jsonp';
+import moment from 'moment';
+import classNames from 'classnames';
 import config from './config';
 import Loader from './components/Loader';
 
@@ -26,66 +28,75 @@ class Hadio extends React.Component {
 	}
 
 	componentDidMount () {
-		this.fetchData().then(data => {
-			this.setState({
-				ready: true,
-				current: data.tracks.current,
-				station: data.station,
-				tracks: data.tracks,
-				updated: new Date()
-			}, () => {
-				this.initPlayer();
-				this.updateData();
+		this.fetchData(config.apiUrl + 'station-metadata?callback=callback')
+			.then(station => {
+				this.setState({
+					name: station.name,
+					logo: station.logo,
+					description: station.description,
+					streams: station.stream_data
+				}, () => {
+					this.fetchData().then(data => {
+						this.setState({
+							ready: true,
+							current: data.tracks.current,
+							station: data.station,
+							tracks: data.tracks
+						}, () => {
+							this.initPlayer();
+							this.updateData();
+						});
+					});
+				});
 			});
-		});
 	}
 
 	updateData (now) {
 		const STATE = this.state;
-		let ends      = new Date(STATE.tracks.current.ends),
-			date      = new Date(),
-			nextFetch = ends - date > 0 ? ends - date : (new Date(STATE.tracks.next.ends) - date);
+		let ends      = moment(STATE.tracks.current.ends),
+			date      = moment(),
+			nextFetch = ends - date > 0 ? ends - date : (moment(STATE.tracks.next.ends) - date);
 
 		if (now) {
-			this.fetchData().then(data => {
-				if (STATE.tracks.current.name !== data.tracks.current.name) {
-					this.log('updateData:setState', data.tracks);
+			this.fetchData()
+				.then(data => {
+					if (STATE.tracks.current.name !== data.tracks.current.name) {
+						this.log('updateData:setState', data.tracks);
 
-					this.interval = setInterval(() => {
-						this.log('updateData:interval', new Date(data.tracks.current.starts) > new Date());
-						if (new Date(data.tracks.current.starts) < new Date()) {
-							this.setState({
-								current: data.tracks.current,
-								station: data.station,
-								tracks: data.tracks,
-								updated: date
-							}, () => {
-								this.retryCount = 0;
-								this.updateData();
-							});
-							clearInterval(this.interval);
-						}
-					}, 1000);
-				}
-				else if (ends - date < 3000 && this.retryCount < 8) {
-					this.log('updateData:retry', this.retryCount);
-					setTimeout(() => {
-						if (new Date(STATE.tracks.next.starts) < date) {
-							this.setState({
-								current: STATE.tracks.next
-							});
-						}
-						this.updateData(this.retryCount < 7);
-						this.retryCount++;
-					}, 1000 * this.retryCount + 1);
-				}
-				else {
-					this.updateData();
-				}
-			});
+						this.interval = setInterval(() => {
+							this.log('updateData:interval', moment(data.tracks.current.starts) > moment());
+							if (moment(data.tracks.current.starts) < moment()) {
+								this.setState({
+									current: data.tracks.current,
+									station: data.station,
+									tracks: data.tracks
+								}, () => {
+									this.retryCount = 0;
+									this.updateData();
+								});
+								clearInterval(this.interval);
+							}
+						}, 1000);
+					}
+					else if (ends - date < 3000 && this.retryCount < 8) {
+						this.log('updateData:retry', this.retryCount);
+						setTimeout(() => {
+							if (moment(STATE.tracks.next.starts) < date) {
+								this.setState({
+									current: STATE.tracks.next
+								});
+							}
+							this.updateData(this.retryCount < 7);
+							this.retryCount++;
+						}, 1000 * this.retryCount + 1);
+					}
+					else {
+						this.updateData();
+					}
+				});
 		}
 		else {
-			this.log('updateData:nextFetch', nextFetch, this.secondsToTime(nextFetch / 1000), ends);
+			this.log('updateData:nextFetch', nextFetch, this.secondsToTime(nextFetch / 1000), ends.format('HH:mm:ss'));
 			clearTimeout(this.timeouts.nextFetch);
 			this.timeouts.nextFetch = setTimeout(() => {
 				this.log('***updateData:setTimeoutcallback', new Date());
@@ -94,8 +105,10 @@ class Hadio extends React.Component {
 		}
 	}
 
-	fetchData () {
-		return fetchJsonp(config.apiUrl + '?callback=callback')
+	fetchData (url) {
+		url = url || config.apiUrl + 'live-info-v2?callback=callback';
+
+		return fetchJsonp(url)
 			.then(response => {
 				return response.json();
 			})
@@ -103,8 +116,8 @@ class Hadio extends React.Component {
 				this.log('fetchData', json);
 				return json;
 			})
-			.catch(ex => {
-				console.log('parsing failed', ex);
+			.catch(e => {
+				throw e;
 			});
 	}
 
@@ -200,14 +213,23 @@ class Hadio extends React.Component {
 	render () {
 		const STATE = this.state;
 		let html,
+			header,
 			info = {};
 
 		if (STATE.ready) {
 			info.name = STATE.current.name;
 			info.next = STATE.current.name !== STATE.tracks.next.name ? STATE.tracks.next.name : '--';
-			info.starts = new Date(STATE.current.starts);
-			info.ends = new Date(STATE.current.ends);
+			info.starts = moment(STATE.current.starts);
+			info.ends = moment(STATE.current.ends);
 			info.duration = this.secondsToTime((info.ends - info.starts) / 1000);
+
+			header = (
+				<header className="app__header clearfix">
+					{STATE.logo ? <img src={STATE.logo} alt={STATE.name} /> : ''}
+					<h2>{STATE.name}</h2>
+					<h3>{STATE.description}</h3>
+				</header>
+			);
 
 			html = (
 				<div className="radio-player">
@@ -258,15 +280,13 @@ class Hadio extends React.Component {
 		}
 
 		return (
-			<div key="Hadio" className="app">
-				<header className="main-header">
-					<h1>Hadio</h1>
-				</header>
+			<div key="Hadio" className={classNames('app', { app__loading: !STATE.ready })}>
+				{header}
 
-				<main className="main-content">
+				<main className="app__content">
 					{html}
 				</main>
-				<footer className="main-footer">
+				<footer className="app__footer">
 					Hadio {String(new Date().getFullYear()).replace('20', '2k')}
 				</footer>
 			</div>

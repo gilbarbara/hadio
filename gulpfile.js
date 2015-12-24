@@ -24,7 +24,7 @@ function watchifyTask (options) {
 		basedir: __dirname,
 		insertGlobals: options.watch,
 		cache: {},
-		debug: options.watch,
+		//debug: options.watch,
 		packageCache: {},
 		fullPaths: options.watch,
 		extensions: ['.jsx']
@@ -215,7 +215,8 @@ gulp.task('serve', ['assets'], function () {
 		server: {
 			baseDir: ['.tmp', 'app'],
 			routes: {
-				'/bower_components': './bower_components'
+				'/bower_components': 'bower_components',
+				'/node_modules': 'node_modules'
 			}
 		}
 	});

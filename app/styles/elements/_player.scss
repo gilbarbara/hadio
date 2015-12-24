@@ -41,6 +41,10 @@
     .jp-volume-controls {
       margin-top: $grid-gutter-width / 6;
 
+      @at-root .mobile & {
+        display: none;
+      }
+
       > a {
         display: inline-block;
         height: 2rem;

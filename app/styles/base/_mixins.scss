@@ -53,19 +53,19 @@
 }
 
 @mixin sm-only {
-  @include max-screen(breakpoint-max('md')) {
+  @include max-screen(breakpoint-max('sm')) {
     @content;
   }
 }
 
 @mixin is {
-  @include min-screen(breakpoint-min('im')) {
+  @include min-screen(breakpoint-min('is')) {
     @content;
   }
 }
 
 @mixin is-only {
-  @include max-screen(breakpoint-max('md')) {
+  @include max-screen(breakpoint-max('is')) {
     @content;
   }
 }
@@ -84,6 +84,12 @@
 
 @mixin lg {
   @include min-screen(breakpoint-min('lg')) {
+    @content;
+  }
+}
+
+@mixin lg-only {
+  @include max-screen(breakpoint-max('lg')) {
     @content;
   }
 }

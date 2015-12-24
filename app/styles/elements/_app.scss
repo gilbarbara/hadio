@@ -1,0 +1,109 @@
+.app {
+  min-height: 100vh;
+  position: relative;
+
+  &__header {
+    @include app-container();
+    padding: {
+      bottom: $grid-gutter-width;
+      top: $grid-gutter-width;
+    }
+    position: relative;
+
+    @include ix-only {
+      text-align: center;
+    }
+
+    &:before {
+      background-image: linear-gradient(to right, $brand-primary, darken($brand-primary, 20));
+      bottom: 0;
+      content: '';
+      height: 5px;
+      left: 0;
+      position: absolute;
+      right: 0;
+    }
+
+    img {
+      display: block;
+      margin: {
+        bottom: $grid-gutter-width / 2;
+        left: auto;
+        right: auto;
+      }
+      vertical-align: top;
+
+      @include ix-only {
+        max-width: 200px;
+        width: 100%;
+      }
+
+      @include sm {
+        float: left;
+        height: 80px;
+        margin-bottom: 0;
+        margin-right: $grid-gutter-width / 2;
+      }
+    }
+
+    h2 {
+      font: {
+        size: 3rem;
+        weight: 300;
+      }
+      line-height: 1.2;
+      margin-bottom: $grid-gutter-width / 3;
+      margin-top: 0;
+
+      @include sm {
+        font-size: 3.6rem;
+      }
+
+      @include md {
+        font-size: 4.8rem;
+        line-height: 1;
+      }
+    }
+
+    h3 {
+      color: $brand-primary;
+      margin: 0;
+    }
+  }
+
+  &__content {
+    @include app-container();
+    padding-top: $grid-gutter-width / 2;
+
+    @include sm {
+      padding-top: $grid-gutter-width;
+    }
+
+    @include lg {
+      padding-top: $grid-gutter-width * 1.5;
+    }
+  }
+
+  &__footer {
+    @include app-container();
+    background-color: lighten($brand-primary, 33);
+    bottom: 0;
+    color: $brand-primary;
+    font-family: Righteous, sans-serif;
+    height: 4rem;
+    left: 0;
+    padding-top: 1rem;
+    position: absolute;
+    right: 0;
+  }
+
+  &__loading {
+    .app__content {
+      min-height: 100vh;
+    }
+
+    .app__footer {
+      display: none;
+    }
+  }
+}
