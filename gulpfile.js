@@ -132,7 +132,6 @@ gulp.task('media', function () {
 gulp.task('bundle', function () {
 	var html,
 		fonts,
-		vendor,
 		extras,
 		svg;
 
@@ -149,14 +148,6 @@ gulp.task('bundle', function () {
 		.pipe(gulp.dest('dist/fonts'))
 		.pipe($.size({
 			title: 'Fonts'
-		}));
-
-	vendor = gulp.src('bower_components/modernizr/modernizr.js')
-		.pipe($.uglify())
-		.pipe($.rename('modernizr.min.js'))
-		.pipe(gulp.dest('dist/scripts'))
-		.pipe($.size({
-			title: 'Vendor'
 		}));
 
 	extras = gulp.src([
@@ -179,7 +170,7 @@ gulp.task('bundle', function () {
 			title: 'SVG'
 		}));
 
-	return merge(html, fonts, vendor, extras, svg);
+	return merge(html, fonts, extras, svg);
 });
 
 gulp.task('sizer', function () {
