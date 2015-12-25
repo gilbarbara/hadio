@@ -270,7 +270,6 @@ class Hadio extends React.Component {
 
 			html = (
 				<div className="radio-player">
-					{show}
 					<div ref="player" id="jquery_jplayer_1" className="jp-jplayer"></div>
 					<div id="jp_container_1"
 						 className={classNames('radio-player--main jp-audio-stream', { live: STATE.current.type === 'livestream' })}
@@ -313,6 +312,7 @@ class Hadio extends React.Component {
 						</div>
 						{STATE.current.type === 'livestream' ? <div className="jp-live">LIVE</div> : ''}
 					</div>
+					{show}
 				</div>
 			);
 		}

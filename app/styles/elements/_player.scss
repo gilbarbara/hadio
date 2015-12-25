@@ -1,6 +1,6 @@
 .radio-player {
   &__show {
-    margin-bottom: $grid-gutter-width;
+    margin-top: $grid-gutter-width;
   }
 
   &__listening {
@@ -30,12 +30,8 @@
     max-width: 64rem;
     min-height: 8rem;
     min-width: 29rem;
-    padding: 0.8rem;
+    padding: 1.2rem;
     position: relative;
-
-    &.live {
-      margin-bottom: 3rem;
-    }
 
     .jp-controls {
       float: left;
@@ -139,6 +135,15 @@
       padding: 0.2rem 2rem 0.5rem;
       position: absolute;
       transform: translate(-50%, 100%);
+    }
+
+    &.live {
+      margin-bottom: 3rem;
+      padding: 2rem;
+
+      .jp-next {
+        display: none;
+      }
     }
   }
 }
