@@ -1,12 +1,41 @@
 .radio-player {
+  &__show {
+    margin-bottom: $grid-gutter-width;
+  }
+
+  &__listening {
+    color: $text-muted;
+    font-style: italic;
+  }
+
+  &__title {
+    color: $brand-primary;
+    font-size: 2.4rem;
+  }
+
+  &__description {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+
+  &__time {
+    color: $text-muted;
+    font-size: 1.2rem;
+    margin-top: 0.5rem;
+  }
+
   &--main {
     background-color: $background-color;
     border-radius: 0.3rem;
-    bottom: 1rem;
     max-width: 64rem;
     min-height: 8rem;
     min-width: 29rem;
     padding: 0.8rem;
+    position: relative;
+
+    &.live {
+      margin-bottom: 3rem;
+    }
 
     .jp-controls {
       float: left;
@@ -97,6 +126,19 @@
       &:focus {
         background-color: darken($brand-primary, 10);
       }
+    }
+
+    .jp-live {
+      background-color: #f00;
+      border-radius: 0 0 6px 6px;
+      bottom: 0;
+      color: #fff;
+      font-size: 1.4rem;
+      left: 50%;
+      line-height: 1;
+      padding: 0.2rem 2rem 0.5rem;
+      position: absolute;
+      transform: translate(-50%, 100%);
     }
   }
 }

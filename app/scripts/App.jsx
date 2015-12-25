@@ -22,6 +22,7 @@ class Hadio extends React.Component {
 		this.$player = undefined;
 		this.retryCount = 0;
 		this.timeouts = {};
+		this.intervals = {};
 		this.debug = true;
 
 		window.Hadio = this;
@@ -41,7 +42,8 @@ class Hadio extends React.Component {
 							ready: true,
 							current: data.tracks.current,
 							station: data.station,
-							tracks: data.tracks
+							tracks: data.tracks,
+							shows: data.shows
 						}, () => {
 							this.initPlayer();
 							this.updateData();
@@ -60,48 +62,71 @@ class Hadio extends React.Component {
 		if (now) {
 			this.fetchData()
 				.then(data => {
-					if (STATE.tracks.current.name !== data.tracks.current.name) {
-						this.log('updateData:setState', data.tracks);
-
-						this.interval = setInterval(() => {
-							this.log('updateData:interval', moment(data.tracks.current.starts) > moment());
-							if (moment(data.tracks.current.starts) < moment()) {
-								this.setState({
-									current: data.tracks.current,
-									station: data.station,
-									tracks: data.tracks
-								}, () => {
-									this.retryCount = 0;
-									this.updateData();
-								});
-								clearInterval(this.interval);
-							}
-						}, 1000);
-					}
-					else if (ends - date < 3000 && this.retryCount < 8) {
-						this.log('updateData:retry', this.retryCount);
-						setTimeout(() => {
-							if (moment(STATE.tracks.next.starts) < date) {
-								this.setState({
-									current: STATE.tracks.next
-								});
-							}
-							this.updateData(this.retryCount < 7);
-							this.retryCount++;
-						}, 1000 * this.retryCount + 1);
+					if (data.tracks.current.type === 'livestream') {
+						this.setState({
+							current: data.tracks.current,
+							station: data.station,
+							tracks: data.tracks,
+							shows: data.shows
+						});
 					}
 					else {
-						this.updateData();
+						if (this.intervals.livestream) {
+							clearInterval(this.intervals.livestream);
+						}
+
+						if (data.tracks && data.tracks.current.name !== STATE.tracks.current.name) {
+							this.intervals.notPlaying = setInterval(() => {
+								this.log('updateData:interval', moment(data.tracks.current.starts) < moment());
+								if (moment(data.tracks.current.starts) < moment()) {
+									this.log('updateData:setState', data.tracks);
+									this.setState({
+										current: data.tracks.current,
+										station: data.station,
+										tracks: data.tracks,
+										shows: data.shows
+									}, () => {
+										this.retryCount = 0;
+										this.updateData();
+									});
+									clearInterval(this.intervals.notPlaying);
+								}
+							}, 1000);
+						}
+						else if (ends - date < 3000 && this.retryCount < 8) {
+							this.log('updateData:retry', this.retryCount);
+							setTimeout(() => {
+								if (moment(STATE.tracks.next.starts) < date) {
+									this.setState({
+										current: STATE.tracks.next
+									});
+								}
+								this.updateData(this.retryCount < 7);
+								this.retryCount++;
+							}, 1000 * this.retryCount + 1);
+						}
+						else {
+							this.updateData();
+						}
 					}
 				});
 		}
-		else {
+		else if (STATE.current.type === 'track') {
 			this.log('updateData:nextFetch', nextFetch, this.secondsToTime(nextFetch / 1000), ends.format('HH:mm:ss'));
+
 			clearTimeout(this.timeouts.nextFetch);
 			this.timeouts.nextFetch = setTimeout(() => {
 				this.log('***updateData:setTimeoutcallback', new Date());
 				this.updateData(true);
 			}, nextFetch);
+		}
+		else {
+			this.log('updateData:livestream', STATE.current);
+
+			clearInterval(this.intervals.livestream);
+			this.intervals.livestream = setInterval(() => {
+				this.updateData(true);
+			}, 15000);
 		}
 	}
 
@@ -214,6 +239,7 @@ class Hadio extends React.Component {
 		const STATE = this.state;
 		let html,
 			header,
+			show,
 			info = {};
 
 		if (STATE.ready) {
@@ -226,15 +252,29 @@ class Hadio extends React.Component {
 			header = (
 				<header className="app__header clearfix">
 					{STATE.logo ? <img src={STATE.logo} alt={STATE.name} /> : ''}
-					<h2>{STATE.name}</h2>
+					<h1>{STATE.name}</h1>
 					<h3>{STATE.description}</h3>
 				</header>
 			);
 
+			show = (
+				<div className="radio-player__show">
+					<div className="radio-player__listening">you're listening to:</div>
+					<h3 className="radio-player__title">{STATE.shows.current.name}</h3>
+					{STATE.shows.current.description ?
+						<div className="radio-player__description">{STATE.shows.current.description}</div> : ''}
+					<div
+						className="radio-player__time">{moment(STATE.shows.current.starts).format('DD.MM HH:mm')} – {moment(STATE.shows.current.ends).format('DD.MM HH:mm')}</div>
+				</div>
+			);
+
 			html = (
 				<div className="radio-player">
+					{show}
 					<div ref="player" id="jquery_jplayer_1" className="jp-jplayer"></div>
-					<div id="jp_container_1" className="radio-player--main jp-audio-stream" role="application"
+					<div id="jp_container_1"
+						 className={classNames('radio-player--main jp-audio-stream', { live: STATE.current.type === 'livestream' })}
+						 role="application"
 						 aria-label="media player">
 						<div className="jp-type-single">
 							<div className="jp-gui jp-interface">
@@ -271,6 +311,7 @@ class Hadio extends React.Component {
 								<a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>.
 							</div>
 						</div>
+						{STATE.current.type === 'livestream' ? <div className="jp-live">LIVE</div> : ''}
 					</div>
 				</div>
 			);

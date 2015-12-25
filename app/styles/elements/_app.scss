@@ -34,7 +34,7 @@
       vertical-align: top;
 
       @include ix-only {
-        max-width: 200px;
+        max-width: 160px;
         width: 100%;
       }
 
@@ -46,7 +46,7 @@
       }
     }
 
-    h2 {
+    h1 {
       font: {
         size: 3rem;
         weight: 300;
@@ -73,6 +73,7 @@
 
   &__content {
     @include app-container();
+    padding-bottom: 6rem;
     padding-top: $grid-gutter-width / 2;
 
     @include sm {
