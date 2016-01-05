@@ -6,7 +6,7 @@ import 'core-js/modules/es6.object.assign';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import App from './App';
+import App from './components/App';
 
 document.addEventListener('DOMContentLoaded', () => {
 	ReactDOM.render(<App/>, document.getElementById('react'));

@@ -1,17 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import fetchJsonp from 'fetch-jsonp';
-import moment from 'moment';
 import classNames from 'classnames';
-import config from './config';
-import Loader from './components/Loader';
+import moment from 'moment';
+import fetchJsonp from 'fetch-jsonp';
+import { autobind } from 'core-decorators';
 
 import $ from 'jquery';
 import 'jPlayer/dist/jplayer/jquery.jplayer.js';
 
-class Hadio extends React.Component {
-	constructor (props) {
+import Loader from './elements/Loader';
+
+class Player extends React.Component {
+	constructor(props) {
 		super(props);
+
 		this.state = {
 			playerReady: false,
 			ready: false,
@@ -25,43 +27,44 @@ class Hadio extends React.Component {
 		this.intervals = {};
 		this.debug = true;
 
-		window.Hadio = this;
+		window.Player = this;
 	}
 
-	componentDidMount () {
-		this.fetchData(config.apiUrl + 'station-metadata?callback=callback')
+	static contextTypes = {
+		app: React.PropTypes.object
+	};
+	
+	static propTypes = {
+		apiUrl: React.PropTypes.string.isRequired
+	};
+
+	componentDidMount() {
+		this.app = this.context.app;
+
+		this.fetchData(this.props.apiUrl + 'station-metadata?callback=callback')
 			.then(station => {
+				const data = station.data;
+
 				this.setState({
-					name: station.name,
-					logo: station.logo,
-					description: station.description,
-					streams: station.stream_data
-				}, () => {
-					this.fetchData().then(data => {
-						this.setState({
-							ready: true,
-							current: data.tracks.current,
-							station: data.station,
-							tracks: data.tracks,
-							shows: data.shows
-						}, () => {
-							this.initPlayer();
-							this.updateData();
-						});
-					});
-				});
+					name: data.name,
+					logo: data.logo,
+					description: data.description,
+					streams: data.stream_data
+				}, this.selectStream);
 			});
 	}
 
-	updateData (now) {
+	updateData(now) {
 		const STATE = this.state;
-		let ends      = moment(STATE.tracks.current.ends),
-			date      = moment(),
-			nextFetch = ends - date > 0 ? ends - date : (moment(STATE.tracks.next.ends) - date);
+		const ends      = moment(STATE.tracks.current.ends);
+		const date      = moment();
+		const nextFetch = ends - date > 0 ? ends - date : (moment(STATE.tracks.next.ends) - date);
 
 		if (now) {
 			this.fetchData()
-				.then(data => {
+				.then(result => {
+					const data = result.data;
+
 					if (data.tracks.current.type === 'livestream') {
 						this.setState({
 							current: data.tracks.current,
@@ -77,9 +80,9 @@ class Hadio extends React.Component {
 
 						if (data.tracks && data.tracks.current.name !== STATE.tracks.current.name) {
 							this.intervals.notPlaying = setInterval(() => {
-								this.log('updateData:interval', moment(data.tracks.current.starts) < moment());
+								this.app.log('updateData:interval', moment(data.tracks.current.starts) < moment());
 								if (moment(data.tracks.current.starts) < moment()) {
-									this.log('updateData:setState', data.tracks);
+									this.app.log('updateData:setState', data.tracks);
 									this.setState({
 										current: data.tracks.current,
 										station: data.station,
@@ -94,7 +97,7 @@ class Hadio extends React.Component {
 							}, 1000);
 						}
 						else if (ends - date < 3000 && this.retryCount < 8) {
-							this.log('updateData:retry', this.retryCount);
+							this.app.log('updateData:retry', this.retryCount);
 							setTimeout(() => {
 								if (moment(STATE.tracks.next.starts) < date) {
 									this.setState({
@@ -112,16 +115,16 @@ class Hadio extends React.Component {
 				});
 		}
 		else if (STATE.current.type === 'track') {
-			this.log('updateData:nextFetch', nextFetch, this.secondsToTime(nextFetch / 1000), ends.format('HH:mm:ss'));
+			this.app.log('updateData:nextFetch', nextFetch, this.secondsToTime(nextFetch / 1000), ends.format('HH:mm:ss'));
 
 			clearTimeout(this.timeouts.nextFetch);
 			this.timeouts.nextFetch = setTimeout(() => {
-				this.log('***updateData:setTimeoutcallback', new Date());
+				this.app.log('***updateData:setTimeoutcallback', new Date());
 				this.updateData(true);
 			}, nextFetch);
 		}
 		else {
-			this.log('updateData:livestream', STATE.current);
+			this.app.log('updateData:livestream', STATE.current);
 
 			clearInterval(this.intervals.livestream);
 			this.intervals.livestream = setInterval(() => {
@@ -130,23 +133,73 @@ class Hadio extends React.Component {
 		}
 	}
 
-	fetchData (url) {
-		url = url || config.apiUrl + 'live-info-v2?callback=callback';
-
-		return fetchJsonp(url)
+	fetchData(url) {
+		return fetchJsonp(url || this.props.apiUrl + 'live-info-v2?callback=callback')
 			.then(response => {
-				return response.json();
+				if (response.status >= 400 && response.status !== 404) {
+					const error = new Error(response.statusText);
+					error.response = response;
+					throw error;
+				}
+				else {
+					return response;
+				}
 			})
-			.then(json => {
-				this.log('fetchData', json);
-				return json;
+			.then(response => {
+				return response.json().then((data) => {
+					return { status: response.status, headers: response.headers, data };
+				});
 			})
-			.catch(e => {
-				throw e;
+			.then((data) => {
+				return data;
+			})
+			.catch((error) => {
+				console.log('request failed', error); // eslint-disable-line no-console
 			});
 	}
 
-	initPlayer () {
+	selectStream() {
+		const state = this.state;
+		let stream;
+
+		if (!state.streams) {
+			this.setState({
+				error: 'No streams'
+			});
+
+			return false;
+		}
+
+		this.app.setStationData({
+			logo: this.state.logo,
+			name: this.state.name,
+			description: this.state.description
+		});
+
+		Object.keys(state.streams).forEach(d => {
+			if (!stream || stream.bitrate > state.streams[d].bitrate) {
+				stream = state.streams[d].url;
+			}
+		});
+
+		this.fetchData().then(result => {
+			const live = result.data;
+
+			this.setState({
+				stream,
+				ready: true,
+				current: live.tracks.current,
+				station: live.station,
+				tracks: live.tracks,
+				shows: live.shows
+			}, () => {
+				this.initPlayer();
+				this.updateData();
+			});
+		});
+	}
+
+	initPlayer() {
 		this.$player = $(ReactDOM.findDOMNode(this.refs.player));
 
 		this.$player.jPlayer({
@@ -188,7 +241,7 @@ class Hadio extends React.Component {
 				this.setState({
 					playerReady: true
 				});
-				this.$player.jPlayer('setMedia', { mp3: config.stream }).jPlayer('play'); // Attempt to auto play the media
+				this.$player.jPlayer('setMedia', { mp3: this.state.stream }).jPlayer('play'); // Attempt to auto play the media
 			},
 			pause: () => {
 				this.$player.jPlayer('clearMedia');
@@ -196,17 +249,24 @@ class Hadio extends React.Component {
 			error: (event) => {
 				if (this.state.playerReady && event.jPlayer.error.type === $.jPlayer.error.URL_NOT_SET) {
 					// Setup the media stream again and play it.
-					this.$player.jPlayer('setMedia', { mp3: config.stream }).jPlayer('play');
+					this.$player.jPlayer('setMedia', { mp3: this.state.stream }).jPlayer('play');
 				}
 			}
 		});
 	}
 
-	secondsToTime (secs) {
-		var sec_num = parseInt(secs, 10),
-			hours   = Math.floor(sec_num / 3600),
-			minutes = Math.floor((sec_num - (hours * 3600)) / 60),
-			seconds = sec_num - (hours * 3600) - (minutes * 60);
+	@autobind
+	onClickLogout(e) {
+		e.preventDefault();
+
+		this.app.setApiUrl('');
+	}
+
+	secondsToTime(secs) {
+		const secNum = parseInt(secs, 10);
+		let hours = Math.floor(secNum / 3600);
+		let minutes = Math.floor((secNum - (hours * 3600)) / 60);
+		let seconds = secNum - (hours * 3600) - (minutes * 60);
 
 		if (hours && hours < 10) {
 			hours = '0' + hours;
@@ -223,24 +283,18 @@ class Hadio extends React.Component {
 		return (hours ? hours + ':' : '') + minutes + ':' + seconds;
 	}
 
-	decodeHtml (html) {
-		var txt = document.createElement('textarea');
+	decodeHtml(html) {
+		const txt = document.createElement('textarea');
 		txt.innerHTML = html;
 		return txt.value;
 	}
 
-	log (msg) {
-		if (this.debug) {
-			console.log(...arguments); //eslint-disable-line no-console
-		}
-	}
-
-	render () {
+	render() {
 		const STATE = this.state;
-		let html,
-			header,
-			show,
-			info = {};
+		const info = {};
+
+		let html;
+		let show;
 
 		if (STATE.ready) {
 			info.name = STATE.current.name;
@@ -249,20 +303,12 @@ class Hadio extends React.Component {
 			info.ends = moment(STATE.current.ends);
 			info.duration = this.secondsToTime((info.ends - info.starts) / 1000);
 
-			header = (
-				<header className="app__header clearfix">
-					{STATE.logo ? <img src={STATE.logo} alt={STATE.name} /> : ''}
-					<h1>{STATE.name}</h1>
-					<h3>{STATE.description}</h3>
-				</header>
-			);
-
 			show = (
 				<div className="radio-player__show">
 					<div className="radio-player__listening">you're listening to:</div>
 					<h3 className="radio-player__title">{STATE.shows.current.name}</h3>
 					{STATE.shows.current.description ?
-						<div className="radio-player__description">{STATE.shows.current.description}</div> : ''}
+					 <div className="radio-player__description">{STATE.shows.current.description}</div> : ''}
 					<div
 						className="radio-player__time">{moment(STATE.shows.current.starts).format('DD.MM HH:mm')} – {moment(STATE.shows.current.ends).format('DD.MM HH:mm')}</div>
 				</div>
@@ -313,6 +359,7 @@ class Hadio extends React.Component {
 						{STATE.current.type === 'livestream' ? <div className="jp-live">LIVE</div> : ''}
 					</div>
 					{show}
+					<a href="#" className="app__logout" onClick={this.onClickLogout}>Change Radio</a>
 				</div>
 			);
 		}
@@ -321,18 +368,11 @@ class Hadio extends React.Component {
 		}
 
 		return (
-			<div key="Hadio" className={classNames('app', { app__loading: !STATE.ready })}>
-				{header}
-
-				<main className="app__content">
-					{html}
-				</main>
-				<footer className="app__footer">
-					Hadio {String(new Date().getFullYear()).replace('20', '2k')}
-				</footer>
+			<div key="Player" className="app__player">
+				{html}
 			</div>
 		);
 	}
 }
 
-export default Hadio;
+export default Player;

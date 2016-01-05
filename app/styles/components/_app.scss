@@ -93,7 +93,7 @@
     font-family: Righteous, sans-serif;
     height: 4rem;
     left: 0;
-    padding-top: 1rem;
+    padding-top: 0.8rem;
     position: absolute;
     right: 0;
   }
@@ -106,5 +106,10 @@
     .app__footer {
       display: none;
     }
+  }
+
+  &__logout {
+    display: block;
+    margin-top: $grid-gutter-width;
   }
 }

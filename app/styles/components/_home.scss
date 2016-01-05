@@ -1,0 +1,16 @@
+.app__home {
+  form {
+    margin: 0 auto;
+    max-width: 64rem;
+
+    fieldset {
+      margin-bottom: $grid-gutter-width / 2;
+    }
+
+    .error-message {
+      color: $brand-primary;
+      font-size: 1.3rem;
+      margin-bottom: $grid-gutter-width / 2;
+    }
+  }
+}

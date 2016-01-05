@@ -1,3 +1,4 @@
+/*eslint-disable no-var, func-names, indent, prefer-arrow-callback, object-shorthand,  require-jsdoc/require-jsdoc  */
 var gulp        = require('gulp'),
 	$           = require('gulp-load-plugins')(),
 	browserify  = require('browserify'),
@@ -17,14 +18,14 @@ var isProduction = function () {
 	},
 	commitMessage;
 
-function watchifyTask (options) {
+function watchifyTask(options) {
 	var bundler, rebundle, iteration = 0;
 	bundler = browserify({
 		entries: path.join(__dirname, '/app/scripts/main.js'),
 		basedir: __dirname,
 		insertGlobals: options.watch,
 		cache: {},
-		//debug: options.watch,
+		// debug: options.watch,
 		packageCache: {},
 		fullPaths: options.watch,
 		extensions: ['.jsx']
@@ -39,7 +40,7 @@ function watchifyTask (options) {
 
 		if (options.watch) {
 			stream.on('error', function (err) {
-				console.log(err);
+				console.log(err); // eslint-disable-line no-console
 			});
 		}
 
@@ -51,7 +52,7 @@ function watchifyTask (options) {
 				if (iteration === 0 && options.cb) {
 					options.cb();
 				}
-				console.log(iteration);
+				console.log(iteration); // eslint-disable-line no-console
 				iteration++;
 			}));
 	};
@@ -71,7 +72,7 @@ gulp.task('scripts', function (cb) {
 gulp.task('scripts:lint', function () {
 	return gulp.src('app/scripts/**/*.js')
 		.pipe($.eslint({
-			useEslintrc: true
+			plugins: ['react', 'jsdoc', 'require-jsdoc']
 		}))
 		.pipe($.eslint.format())
 		.pipe($.eslint.failOnError());
@@ -96,23 +97,6 @@ gulp.task('styles', function () {
 		.pipe(gulp.dest('.tmp/styles'))
 		.pipe($.size({
 			title: 'Styles'
-		}));
-});
-
-gulp.task('templates', function () {
-	return gulp.src('app/templates/*.hbs')
-		.pipe($.handlebars({
-			handlebars: require('handlebars')
-		}))
-		.pipe($.wrap('Handlebars.template(<%= contents %>)'))
-		.pipe($.declare({
-			namespace: 'templates',
-			noRedeclare: true // Avoid duplicate declarations
-		}))
-		.pipe($.concat('templates.js'))
-		.pipe(gulp.dest('.tmp/scripts'))
-		.pipe($.size({
-			title: 'Templates'
 		}));
 });
 
@@ -186,7 +170,7 @@ gulp.task('modernizr', function (cb) {
 });
 
 gulp.task('assets', ['clean'], function (cb) {
-	runSequence('styles', 'scripts', 'modernizr', 'templates', cb);
+	runSequence('styles', 'scripts', 'modernizr', cb);
 });
 
 gulp.task('clean', function (cb) {
@@ -218,7 +202,6 @@ gulp.task('serve', ['assets'], function () {
 	});
 	gulp.watch('.tmp/scripts/**/*.js', browserSync.reload);
 	gulp.watch('.tmp/styles/**/*.css', browserSync.stream);
-	gulp.watch('app/templates/**/*.hbs', ['templates']);
 	gulp.watch('.modernizr-config.json', ['modernizr', browserSync.reload]);
 });
 

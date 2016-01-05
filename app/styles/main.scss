@@ -8,9 +8,10 @@
 @import 'base/typography';
 
 // ** Elements **
-@import 'elements/loader';
-@import 'elements/basic';
-@import 'elements/app';
-@import 'elements/player';
+@import 'globals/basic';
+@import 'globals/loader';
 
 // ** Components **
+@import 'components/app';
+@import 'components/home';
+@import 'components/player';

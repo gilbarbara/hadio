@@ -1,8 +1,8 @@
 import React from 'react';
-import shouldPureComponentUpdate from 'react-pure-render/function';
+import shouldComponentUpdate from '../../utils/pureRender';
 
 class Loader extends React.Component {
-	constructor (props) {
+	constructor(props) {
 		super(props);
 	}
 
@@ -15,18 +15,19 @@ class Loader extends React.Component {
 		inside: false
 	}
 
-	shouldComponentUpdate = shouldPureComponentUpdate;
+	shouldComponentUpdate = shouldComponentUpdate;
 
-	render () {
+	render() {
 		let html = (
 			<div className="loader">
 				<svg className="loader__svg">
-					<circle className="loader__circle"
-							cx="50"
-							cy="50"
-							r="20"
-							fill="none"
-							strokeWidth="2" />
+					<circle
+						className="loader__circle"
+						cx="50"
+						cy="50"
+						r="20"
+						fill="none"
+						strokeWidth="2" />
 				</svg>
 			</div>
 		);
