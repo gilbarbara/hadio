@@ -73,7 +73,10 @@ class Hadio extends React.Component {
 		}
 
 		this.setState({
-			apiUrl
+			apiUrl,
+			name: undefined,
+			description: undefined,
+			logo: undefined
 		});
 
 		Storage.setItem('hadio', {

@@ -109,7 +109,31 @@
   }
 
   &__logout {
-    display: block;
+    color: $gray;
+    display: inline-block;
     margin-top: $grid-gutter-width;
+    position: relative;
+
+    &:before {
+      background-color: $gray-light;
+      bottom: -1px;
+      content: '';
+      height: 1px;
+      left: 0;
+      position: absolute;
+      right: 0;
+    }
+
+    &:hover,
+    &:focus {
+      color: $brand-primary;
+      text-decoration: none;
+      
+      &:before {
+        background-color: $brand-primary;
+        bottom: -2px;
+        height: 2px;
+      }
+    }
   }
 }

@@ -360,7 +360,8 @@ class Player extends React.Component {
 						{STATE.current.type === 'livestream' ? <div className="jp-live">LIVE</div> : ''}
 					</div>
 					{show}
-					<a href="#" className="app__logout" onClick={this.onClickLogout}>Change Radio</a>
+					<a href="#" className="app__logout" onClick={this.onClickLogout}>
+						<i className="i-sign-out"/> Change Radio</a>
 				</div>
 			);
 		}

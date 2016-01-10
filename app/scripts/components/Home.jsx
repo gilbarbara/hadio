@@ -63,7 +63,7 @@ class Home extends React.Component {
 							placeholder="https://radio.airtime.pro/api/" required />
 					</fieldset>
 					{error}
-					<button type="submit" className="btn btn-primary">Submit</button>
+					<button type="submit" className="btn btn-primary"><i className="i-sign-in" /> Play</button>
 				</form>
 			</div>
 		);

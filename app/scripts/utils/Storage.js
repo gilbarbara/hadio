@@ -6,7 +6,6 @@
 export default {
 	/**
 	 * @param {string} name
-	 *
 	 * @returns {Object}
 	 */
 	getItem(name) {
@@ -16,6 +15,7 @@ export default {
 	/**
 	 * @param {string} name
 	 * @param {Object} value
+	 *
 	 */
 	setItem(name, value) {
 		localStorage.setItem(name, JSON.stringify(value));
