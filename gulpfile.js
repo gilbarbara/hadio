@@ -1,4 +1,4 @@
-/*eslint-disable no-var, func-names, indent, prefer-arrow-callback, object-shorthand,  require-jsdoc/require-jsdoc  */
+/*eslint-disable no-var, func-names, indent, prefer-arrow-callback, object-shorthand,  require-jsdoc  */
 var gulp        = require('gulp'),
 	$           = require('gulp-load-plugins')(),
 	browserify  = require('browserify'),

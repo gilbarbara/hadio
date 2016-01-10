@@ -1,6 +1,14 @@
 {
   "name": "hadio",
+  "description": "Airtime player",
   "version": "0.2.0",
+  "author": "Gil Barbara <gilbarbara@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gilbarbara/hadio"
+  },
+  "bugs": "https://github.com/gilbarbara/hadio/issues",
+  "license": "MIT",
   "dependencies": {
     "classlist-polyfill": "^1.0",
     "classnames": "^2.2",
@@ -25,15 +33,15 @@
     "babel-preset-stage-1": "^6.3",
     "babelify": "^7.2",
     "browser-sync": "^2.11",
-    "browserify": "^12.0",
+    "browserify": "^13.0",
     "browserify-shim": "^3.8",
     "connect": "^3.4",
     "debowerify": "^1.3",
     "del": "^2.2",
     "eslint": "^1.10",
-    "eslint-config-airbnb": "^2.1",
+    "eslint-config-airbnb": "^3.1",
     "eslint-plugin-jsdoc": "^2.2",
-    "eslint-plugin-react": "^3.13",
+    "eslint-plugin-react": "^3.14",
     "gulp": "^3.9",
     "gulp-autoprefixer": "^3.1",
     "gulp-cache": "^0.4",
@@ -48,7 +56,7 @@
     "gulp-handlebars": "^4.0",
     "gulp-if": "^2.0",
     "gulp-imagemin": "^2.4",
-    "gulp-load-plugins": "^1.1",
+    "gulp-load-plugins": "^1.2",
     "gulp-newer": "^1.1",
     "gulp-plumber": "^1.0",
     "gulp-rename": "^1.2",
@@ -65,7 +73,7 @@
     "vinyl-buffer": "^1.0",
     "vinyl-paths": "^2.1",
     "vinyl-source-stream": "^1.1",
-    "watchify": "^3.6"
+    "watchify": "^3.7"
   },
   "babel": {
     "presets": [
