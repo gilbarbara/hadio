@@ -2,7 +2,7 @@ import shallowEqual from 'fbjs/lib/shallowEqual';
 
 /**
  * @module PureRender
- * @desc shouldComponentUpdate with context
+ * @description shouldComponentUpdate with context
  * @requires shallowEqual
  *
  * @param {Object} instance

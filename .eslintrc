@@ -10,8 +10,7 @@
 	"fetch": false
   },
   "plugins": [
-	"jsdoc",
-	"require-jsdoc"
+	"jsdoc"
   ],
   "rules": {
 	"brace-style": [
@@ -52,11 +51,17 @@
 	"object-shorthand": [1, "always"],
 	"one-var": 0,
 	"prefer-const": 1,
+	"require-jsdoc": [1, {
+	  "require": {
+		"FunctionDeclaration": true,
+		"MethodDefinition": false,
+		"ClassDeclaration": false
+	  }
+	}],
 	"space-before-function-paren": [1, {"anonymous": "always", "named": "never"} ],
 	"space-in-parens": 1,
 	"spaced-comment": [1, "always", { "exceptions": ["-+"], "markers": ["eslint-disable"] }],
 	// JSDoc
-	"require-jsdoc/require-jsdoc": 1,
 	"jsdoc/check-param-names": 1,
 	"jsdoc/check-tag-names": 1,
 	"jsdoc/check-types": 1,

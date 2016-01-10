@@ -55,9 +55,12 @@ class Home extends React.Component {
 					<fieldset className="form-group">
 						<label labelFor="apiUrl">
 							<h2>API URL</h2>
-							<p>Enter you Airtime radio api below.<br/>You have to enable the "Public Airtime API" in you radio's settings</p>
+							<p>Enter you Airtime radio api below.<br />You have to enable the "Public Airtime API" in you radio's settings
+							</p>
 						</label>
-						<input type="text" className="form-control" id="apiUrl" placeholder="https://radio.airtime.pro/api/" required />
+						<input
+							type="text" className="form-control" id="apiUrl"
+							placeholder="https://radio.airtime.pro/api/" required />
 					</fieldset>
 					{error}
 					<button type="submit" className="btn btn-primary">Submit</button>
@@ -66,6 +69,5 @@ class Home extends React.Component {
 		);
 	}
 }
-
 
 export default Home;

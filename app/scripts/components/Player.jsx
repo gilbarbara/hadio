@@ -33,7 +33,7 @@ class Player extends React.Component {
 	static contextTypes = {
 		app: React.PropTypes.object
 	};
-	
+
 	static propTypes = {
 		apiUrl: React.PropTypes.string.isRequired
 	};
@@ -56,8 +56,8 @@ class Player extends React.Component {
 
 	updateData(now) {
 		const STATE = this.state;
-		const ends      = moment(STATE.tracks.current.ends);
-		const date      = moment();
+		const ends = moment(STATE.tracks.current.ends);
+		const date = moment();
 		const nextFetch = ends - date > 0 ? ends - date : (moment(STATE.tracks.next.ends) - date);
 
 		if (now) {
@@ -310,7 +310,8 @@ class Player extends React.Component {
 					{STATE.shows.current.description ?
 					 <div className="radio-player__description">{STATE.shows.current.description}</div> : ''}
 					<div
-						className="radio-player__time">{moment(STATE.shows.current.starts).format('DD.MM HH:mm')} – {moment(STATE.shows.current.ends).format('DD.MM HH:mm')}</div>
+						className="radio-player__time">{moment(STATE.shows.current.starts)
+						.format('DD.MM HH:mm')} – {moment(STATE.shows.current.ends).format('DD.MM HH:mm')}</div>
 				</div>
 			);
 

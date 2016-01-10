@@ -9,7 +9,7 @@ export default {
 	 *
 	 * @returns {Object}
 	 */
-	getItem (name) {
+	getItem(name) {
 		return JSON.parse(localStorage.getItem(name));
 	},
 
@@ -17,22 +17,23 @@ export default {
 	 * @param {string} name
 	 * @param {Object} value
 	 */
-	setItem (name, value) {
+	setItem(name, value) {
 		localStorage.setItem(name, JSON.stringify(value));
 	},
 
 	/**
-	 * Remove item from localStorage
-	 * @param {String} name
+	 * Remove item from localStorage.
+	 *
+	 * @param {string} name
 	 */
-	removeItem (name) {
+	removeItem(name) {
 		localStorage.removeItem(name);
 	},
 
 	/**
 	 * Clear localStorage.
 	 */
-	clearAll () {
+	clearAll() {
 		localStorage.clear();
 	}
 };

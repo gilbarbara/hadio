@@ -1,7 +1,6 @@
 import React from 'react';
 import { autobind } from 'core-decorators';
 import classNames from 'classnames';
-import URL from 'url-parser';
 
 import Storage from '../utils/Storage';
 import { deparam } from '../utils/Object';
@@ -45,7 +44,7 @@ class Hadio extends React.Component {
 			});
 		}
 		else {
-			let queryData = deparam(location.search.substr(1));
+			const queryData = deparam(location.search.substr(1));
 
 			if (queryData.apiUrl) {
 				this.setState({
