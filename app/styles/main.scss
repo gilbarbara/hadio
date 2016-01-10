@@ -1,3 +1,5 @@
+@import url('//fonts.googleapis.com/css?family=Lato:300,400,400italic,600,700|Righteous');
+
 //** Libs **
 @import 'sass-mediaqueries/media-queries';
 
@@ -5,7 +7,7 @@
 @import 'base/variables';
 @import 'base/bootstrap';
 @import 'base/mixins';
-@import 'base/typography';
+@import 'base/icons';
 
 // ** Elements **
 @import 'globals/basic';

@@ -1,7 +1,5 @@
 @charset "UTF-8";
 
-@import url('//fonts.googleapis.com/css?family=Lato:300,400,400italic,600,700|Righteous');
-
 @font-face {
   font-family: 'player';
   src: url('#{$fonts-path}player.eot');
@@ -25,6 +23,8 @@
   line-height: 1;
   speak: none;
   text-transform: none !important;
+  position: relative;
+  top: 0.15rem;
 }
 
 [class^='i-']:before,
@@ -38,6 +38,8 @@
   line-height: 1;
   speak: none;
   text-transform: none !important;
+  position: relative;
+  top: 0.15rem;
 }
 
 .i-play:before {
@@ -158,4 +160,24 @@
 
 .i-wrench:before {
   content: '\e01d';
+}
+
+.i-youtube-play:before {
+  content: '\e01e';
+}
+
+.i-soundcloud:before {
+  content: '\e01f';
+}
+
+.i-spotify:before {
+  content: '\e020';
+}
+
+.i-sign-in:before {
+  content: '\e021';
+}
+
+.i-sign-out:before {
+  content: '\e022';
 }
