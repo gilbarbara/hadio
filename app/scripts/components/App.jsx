@@ -36,7 +36,7 @@ class Hadio extends React.Component {
 	}
 
 	componentWillMount() {
-		const data = Storage.getItem('hadio');
+		const data = Storage.getItem('hadio') || {};
 
 		if (data.apiUrl) {
 			this.setState({
